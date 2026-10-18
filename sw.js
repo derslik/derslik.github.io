@@ -1,8 +1,8 @@
 /* Servis çalışanı: uygulamayı çevrimdışı açar, sesleri ilk kullanımda önbelleğe alır.
-   20261018231811 yayın sırasında zaman damgasıyla değişir; yeni sürüm gelince eski kabuk silinir. */
-const SURUM = "20261018231811";
+   20261019010200 yayın sırasında zaman damgasıyla değişir; yeni sürüm gelince eski kabuk silinir. */
+const SURUM = "20261019010200";
 const KABUK = "mv-kabuk-" + SURUM, SES = "mv-ses", YAZI = "mv-yazi";
-const KABUK_DOSYALARI = ["./", "index.html", "manifest.webmanifest", "icon-192.png", "icon-512.png", "apple-touch-icon.png", "audio/manifest.js", "audio/manifest3.js"];
+const KABUK_DOSYALARI = ["./", "index.html", "manifest.webmanifest", "icon-192.png", "icon-512.png", "apple-touch-icon.png", "audio/manifest.js", "audio/manifest3.js", "audio-erkek/manifest.js", "audio-erkek/manifest3.js"];
 
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(KABUK).then(c => Promise.all(KABUK_DOSYALARI.map(f => c.add(f).catch(() => {})))).then(() => self.skipWaiting()));
@@ -42,7 +42,7 @@ self.addEventListener("fetch", e => {
     return;
   }
   if (url.origin !== location.origin) return;
-  if (/\/audio\/.*\.mp3$/.test(url.pathname)) { e.respondWith(sesYanit(req)); return; }
+  if (/\/audio(-erkek)?\/.*\.mp3$/.test(url.pathname)) { e.respondWith(sesYanit(req)); return; }
   if (req.mode === "navigate") {
     e.respondWith(fetch(req).then(r => { const k = r.clone(); caches.open(KABUK).then(c => c.put("index.html", k)); return r; }).catch(() => caches.match("index.html")));
     return;
