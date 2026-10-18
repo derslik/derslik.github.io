@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#2B2822"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; media-src 'self' blob:; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'"><meta name="referrer" content="no-referrer"><meta name="robots" content="noindex,nofollow"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Muhasebe"><meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>Muhasebe Vize Hazırlık</title>
+<link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#2B2822"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; media-src 'self' blob:; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'"><meta name="referrer" content="no-referrer"><meta name="robots" content="noindex,nofollow"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Derslik"><meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Derslik</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 
 
@@ -332,7 +332,8 @@ tr.rv.tot.on{animation:none;background:var(--surface2)}
 /* Ders bilgisi tek yerde. Yeni ders eklemek için bu dosyanın bir kopyası (ve kendi parçaları, sahneleri, soruları) yazılır. */
 window.COURSE={
   id:"muhasebe-1",
-  baslik:"Muhasebe Vize Hazırlık",
+  marka:"Derslik",
+  baslik:"Muhasebe I",
   hedef:"vizeden tam puan",
   sinav:{ad:"Vize",tarih:[2026,10,16]},
   baslangic:[2026,9,18],
@@ -2507,7 +2508,7 @@ function shell(content){
   return '<div class="shell"><aside class="side">'+brandHtml()+'<nav class="nav" aria-label="Ana menü">'+nav+'</nav><div class="side-foot">'+foot+'</div></aside><main class="main"><div class="wrap">'+content+'</div></main></div><nav class="tabbar" aria-label="Sekmeler">'+nav+'</nav>';
 }
 function brandHtml(){
-  return '<div class="brandbox"><span class="bmark"><svg viewBox="0 0 24 24" fill="none" stroke="#E4D3A8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5a2 2 0 012-2h13v16H6a2 2 0 00-2 2z"/><path d="M4 21V5"/><path d="M9 8h6M9 12h6"/></svg></span><div><b>'+esc(CO.baslik)+'</b><small>Hedef: '+esc(CO.hedef)+'</small><span class="cd">'+cdText()+'</span></div></div>';
+  return '<div class="brandbox"><span class="bmark"><svg viewBox="0 0 24 24" fill="none" stroke="#E4D3A8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5a2 2 0 012-2h13v16H6a2 2 0 00-2 2z"/><path d="M4 21V5"/><path d="M9 8h6M9 12h6"/></svg></span><div><b>'+esc(CO.marka)+'</b><small>'+esc(CO.baslik)+' · Hedef: '+esc(CO.hedef)+'</small><span class="cd">'+cdText()+'</span></div></div>';
 }
 function top(eyebrow,title,sub,extra){
   return '<div class="top"><div><div class="eyebrow">'+eyebrow+'</div><h1>'+title+'</h1>'+(sub?'<p class="sub">'+sub+'</p>':'')+'</div>'+(extra?'<div class="row">'+extra+'</div>':'')+'</div>';

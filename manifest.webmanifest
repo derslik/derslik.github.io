@@ -1,6 +1,6 @@
 {
-  "name": "Muhasebe Vize Hazırlık",
-  "short_name": "Muhasebe",
+  "name": "Derslik",
+  "short_name": "Derslik",
   "description": "Muhasebe I vizesi için hareketli ve sesli anlatım, kartlar, atölye ve testler.",
   "lang": "tr",
   "start_url": "./",
