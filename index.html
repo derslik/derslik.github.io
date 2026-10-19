@@ -340,6 +340,18 @@ tr.rv.tot.on{animation:none;background:var(--surface2)}
   .crates{margin-left:0;width:100%;justify-content:center}
   .fl:not(.vert) .fstep:not(:first-child)::before{display:none}
 }
+/* telefon: tablolar ekrana sığsın (yana kaymasın, kenardan kesilmiş görünmesin); büyük yazı ayarında da */
+@media (max-width:600px){
+  table{font-size:.8rem}
+  th,td{padding:6px 7px}
+  th{white-space:normal;line-height:1.25}
+  td{overflow-wrap:anywhere;hyphens:auto}
+  td.n,th.n{font-size:.78rem;letter-spacing:-.01em}
+  .cine .tw{margin:8px 0}
+  /* sinemada tablo yazısı ekran genişliğine de bağlı: telefonun büyük yazı ayarında 5 sütunlu mizan da sığar */
+  .cine table{font-size:min(.8rem,3.4vw)} .cine td.n,.cine th.n{font-size:min(.78rem,3.2vw)} .cine th,.cine td{padding:6px min(7px,1.4vw)}
+  .sc-title h2{font-size:clamp(1.5rem,7.5vw,2.2rem);overflow-wrap:anywhere;hyphens:auto}
+}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}.rv{opacity:1;transform:none}}
 </style>
 </head><body><div id="app"></div>
