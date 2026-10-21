@@ -355,7 +355,7 @@ tr.rv.tot.on{animation:none;background:var(--surface2)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}.rv{opacity:1;transform:none}}
 </style>
 </head><body><div id="app"></div>
-<script src="audio/manifest.js"></script><script src="audio-erkek/manifest.js"></script><script src="audio-erkek/manifest3.js"></script><script src="audio/manifest3.js"></script>
+<script src="audio/manifest.js"></script><script src="audio-erkek/manifest.js"></script><script src="audio-erkek/manifest3.js"></script><script src="audio/manifest3.js"></script><script src="audio-gk/manifest.js"></script><script src="audio-gk/manifest2.js"></script><script src="audio-ge/manifest.js"></script><script src="audio-ge/manifest2.js"></script>
 <script>
 /* Ders bilgisi tek yerde. Yeni ders eklemek için bu dosyanın bir kopyası (ve kendi parçaları, sahneleri, soruları) yazılır. */
 window.COURSE={
@@ -2149,8 +2149,18 @@ Nar.stop=function(){
   if(Nar.audio){try{Nar.audio.pause();}catch(e){}Nar.audio=null;}
   Nar.mode="idle";Nar.blocked=false;
 };
-function sek(){return PREF.ses==="erkek"&&window.AUDIO_MANIFEST_E?"_E":"";}
-function aud(key){var m=window["AUDIO_MANIFEST"+sek()];return key&&m&&m[key]?m[key]:"";}
+/* Anlatıcılar: Gemini (Zephyr, Schedar) üretildikçe siteye eklenir. Bir kaydı henüz yoksa o öğe için
+   aynı cinsiyetteki Microsoft sesi (Emel, Ahmet) çalar; böylece eksik kayıt sessizliğe ya da cihaz sesine düşmez. */
+var SES={kadin:{s:"",y:""},erkek:{s:"_E",y:""},gk:{s:"_GK",y:""},ge:{s:"_GE",y:"_E"}};
+if(!PREF.sesSecildi&&window.AUDIO_MANIFEST_GK)PREF.ses="gk";
+function sek(){var v=SES[PREF.ses]||SES.kadin;return window["AUDIO_MANIFEST"+v.s]?v.s:(window["AUDIO_MANIFEST"+v.y]?v.y:"");}
+function yedekSek(){var v=SES[PREF.ses]||SES.kadin;return v.y;}
+/* anahtarın kaydı hangi seste var: önce seçili ses, yoksa yedeği */
+function audSuf(key){var a=sek(),b=yedekSek(),m;
+  if(key&&(m=window["AUDIO_MANIFEST"+a])&&m[key])return [m[key],a];
+  if(key&&(m=window["AUDIO_MANIFEST"+b])&&m[key])return [m[key],b];
+  return ["",a];}
+function aud(key){return audSuf(key)[0];}
 function posFrom(tm,t,dur,total){
   var n=tm.length,i=0;while(i+1<n&&tm[i+1][0]<=t)i++;
   var t0=tm[i][0],c0=tm[i][1],t1,c1;
@@ -2160,7 +2170,7 @@ function posFrom(tm,t,dur,total){
 }
 Nar.speak=function(text,url,onEnd,key){
   Nar.stop();
-  var TT=window["AUDIO_TIMES"+sek()];Nar.times=key&&TT&&TT[key]&&TT[key].length?TT[key]:null;
+  var TT=window["AUDIO_TIMES"+audSuf(key)[1]];Nar.times=key&&TT&&TT[key]&&TT[key].length?TT[key]:null;
   Nar.text=text;Nar.total=Math.max(1,text.length);Nar.pos=0;Nar.onEnd=onEnd;Nar.playing=true;Nar.sents=sentences(text);Nar.k=0;Nar.note="";Nar.last=Date.now();
   if(url&&!PREF.muted){Nar.mode="audio";startAudio(url);}
   else if(!PREF.muted&&SUP&&!Nar.broken&&(Nar.voice||voices().length)){Nar.mode="tts";speakSent(0);}
@@ -2220,6 +2230,12 @@ Nar.rate=function(r){PREF.rate=r;savePref();if(Nar.audio)Nar.audio.playbackRate=
 
 /* Paketli kart ve soru sesleri: paketi bir kez indirir, kaydı keser */
 var PACKS={},ACTX=null;
+function sesDugmeleri(){
+  var l=[];if(window.AUDIO_MANIFEST_GK)l.push(["gk","Kadın · Zephyr"]);if(window.AUDIO_MANIFEST_GE)l.push(["ge","Erkek · Schedar"]);
+  l.push(["kadin","Kadın · Emel"]);if(window.AUDIO_MANIFEST_E)l.push(["erkek","Erkek · Ahmet"]);
+  if(l.length<2)return "";
+  return '<span class="cchk" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">Anlatıcı '+l.map(function(x){return '<button class="cb sm'+(PREF.ses===x[0]?' on':'')+'" data-c="ses" data-v="'+x[0]+'">'+x[1]+'</button>';}).join("")+'</span>';
+}
 function playPack(pk,onFail){
   /* Web Audio kullanılır: medya kaynağı kurallarından etkilenmez. Bağlam, dokunma anında oluşturulur. */
   try{ACTX=ACTX||new (window.AudioContext||window.webkitAudioContext)();if(ACTX.state==="suspended")ACTX.resume();}catch(e){onFail();return;}
@@ -2307,7 +2323,7 @@ function chrome(){
   var vopt=vs.length?vs.map(function(v){return '<option'+(Nar.voice&&Nar.voice.name===v.name?' selected':'')+'>'+esc(v.name)+'</option>';}).join(""):'<option>Türkçe ses bulunamadı</option>';
   return '<div class="ctop"><div class="ctitle"><b>Parça '+C.lid+'</b><span>'+esc(lesson?lesson.t:"")+'</span></div><div class="row"><button class="cb" data-c="settings" aria-label="Ses ayarları">Ses</button><button class="cb" data-c="close" aria-label="Kapat">Kapat ✕</button></div></div>'
    +'<div class="csegs">'+seg+'</div>'
-   +'<div class="cset" id="cset" hidden>'+(window.AUDIO_MANIFEST_E?'<span class="cchk" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">Anlatıcı <button class="cb sm'+(PREF.ses!=="erkek"?' on':'')+'" data-c="ses" data-v="kadin">Kadın · Emel</button><button class="cb sm'+(PREF.ses==="erkek"?' on':'')+'" data-c="ses" data-v="erkek">Erkek · Ahmet</button></span>':'')+'<label>Cihaz sesi<select id="cvoice">'+vopt+'</select></label><button class="cb" data-c="test">Dene</button><span class="cnote" id="cmodeinfo" style="flex-basis:auto"></span><label class="cchk"><input type="checkbox" id="cmute"'+(PREF.muted?' checked':'')+'> Sessiz (yalnız görsel ve altyazı)</label><p class="cnote">'+(window.AUDIO_MANIFEST?'Anlatım sesi hazır kayıttır (yapay zekâ sinir ağı sesi); her cihazda aynı kalitede çalışır. Cihaz sesi seçimi yalnız yedek durumda kullanılır.':'En doğal ses için bilgisayarda Microsoft Edge ile aç; “Natural” sesler orada hazır gelir. Telefonda ses yoksa sayfa sessiz okuma moduna geçer.')+'</p></div>'
+   +'<div class="cset" id="cset" hidden>'+sesDugmeleri()+'<label>Cihaz sesi<select id="cvoice">'+vopt+'</select></label><button class="cb" data-c="test">Dene</button><span class="cnote" id="cmodeinfo" style="flex-basis:auto"></span><label class="cchk"><input type="checkbox" id="cmute"'+(PREF.muted?' checked':'')+'> Sessiz (yalnız görsel ve altyazı)</label><p class="cnote">'+(window.AUDIO_MANIFEST?'Anlatım sesi hazır kayıttır (yapay zekâ sinir ağı sesi); her cihazda aynı kalitede çalışır. Cihaz sesi seçimi yalnız yedek durumda kullanılır.':'En doğal ses için bilgisayarda Microsoft Edge ile aç; “Natural” sesler orada hazır gelir. Telefonda ses yoksa sayfa sessiz okuma moduna geçer.')+'</p></div>'
    +'<div class="cstage" id="cstage"></div><div class="ccap" id="ccap"></div>'
    +'<div class="cctl"><button class="cb" data-c="prev" aria-label="Önceki sahne">⏮</button><button class="cb big" data-c="play" id="cplay" aria-label="Duraklat veya devam">❚❚</button><button class="cb" data-c="next" aria-label="Sonraki sahne">⏭</button><div class="row crates">'+RATES.map(function(r){return '<button class="cb sm'+(PREF.rate===r?' on':'')+'" data-c="rate" data-r="'+r+'">'+r+'×</button>';}).join("")+'</div></div>';
 }
@@ -2389,7 +2405,7 @@ function onClick(e){
   else if(c==="prev"){Nar.stop();enter(Math.max(0,C.i-1));}
   else if(c==="rate"){Nar.rate(parseFloat(x.getAttribute("data-r")));Array.prototype.forEach.call(document.querySelectorAll(".crates .cb"),function(b){b.classList.toggle("on",parseFloat(b.getAttribute("data-r"))===PREF.rate);});}
   else if(c==="settings"){var st=$("#cset");st.hidden=!st.hidden;}
-  else if(c==="ses"){PREF.ses=x.getAttribute("data-v");savePref();Nar.stop();enter(C.i);var cs=$("#cset");if(cs)cs.hidden=false;}
+  else if(c==="ses"){PREF.ses=x.getAttribute("data-v");PREF.sesSecildi=true;savePref();Nar.stop();enter(C.i);var cs=$("#cset");if(cs)cs.hidden=false;}
   else if(c==="test"){var sel=$("#cvoice");PREF.voice=sel?sel.value:"";savePref();pickVoice();Nar.stop();Nar.speak("Merhaba. Bu ses muhasebe derslerini sana anlatacak. Kâr ve zarar, borç ve alacak.",aud("test"),function(){},"test");updateCtl();}
   else if(c==="reveal"){C.asked++;var aa=$("#aa");aa.hidden=false;x.hidden=true;var think=$(".think");if(think)think.hidden=true;sayThen(s.say2||s.a,function(){nextBtn();},C.lid+"-"+C.i+"b");}
   else if(c==="pick"){
@@ -2427,8 +2443,10 @@ function summary(){
     else if(c==="nextl"){if(window.CineAPI&&window.CineAPI.onFinish)window.CineAPI.onFinish(lid,C.right,C.asked);close(true);open(nextL);}
   };
 }
-window.Cine={_ctl:function(){if(C)updateCtl();},sonek:function(){return sek();},open:open,close:close,has:function(lid){return !!SC[lid];},minutes:estMin,supported:SUP,say:function(t,key){
-  t=String(t);var PKM=window["AUDIO_PACK"+sek()];var pk=key&&PKM&&PKM[key];
+window.Cine={_ctl:function(){if(C)updateCtl();},sonek:function(){return sek();},yedek:function(){return yedekSek();},open:open,close:close,has:function(lid){return !!SC[lid];},minutes:estMin,supported:SUP,say:function(t,key){
+  t=String(t);var as=audSuf(key);
+  if(as[0]&&as[1]===sek()&&!window["AUDIO_PACK"+as[1]]){Nar.speak(t,as[0],function(){},key);return;}
+  var PKM=window["AUDIO_PACK"+as[1]]||window["AUDIO_PACK"+yedekSek()];var pk=key&&PKM&&PKM[key];
   if(pk&&location.protocol!=="file:"){
     Nar.stop();
     playPack(pk,function(){Nar.speak(t,"",function(){},"");if(window.CineAPI&&CineAPI.toast)CineAPI.toast("Hazır kayıt yüklenemedi; cihaz sesi kullanılıyor.");});
@@ -2935,8 +2953,10 @@ function pwaInfo(t){var e=document.getElementById("pwainfo");if(e)e.textContent=
 function offlineDl(){
   if(!PWA.ok||!window.caches){toast("Bu tarayıcıda çevrimdışı indirme yok.");return;}
   var suf=(window.Cine&&Cine.sonek)?Cine.sonek():"";
-  var m=window["AUDIO_MANIFEST"+suf]||window.AUDIO_MANIFEST||{},urls=[],seen={},pk=window["AUDIO_PACK"+suf]||window.AUDIO_PACK||{};
-  Object.keys(m).forEach(function(k){if(/^(\d+-\d+[a-z]*|match|test)$/.test(k))urls.push(m[k]);});
+  var ys=(window.Cine&&Cine.yedek)?Cine.yedek():"";
+  var m=window["AUDIO_MANIFEST"+suf]||window.AUDIO_MANIFEST||{},urls=[],seen={},pk=window["AUDIO_PACK"+suf]||window["AUDIO_PACK"+ys]||window.AUDIO_PACK||{};
+  var paketsiz=!window["AUDIO_PACK"+suf];  /* Gemini sesleri tek tek dosyadır: kart ve soru kayıtları da indirilir */
+  Object.keys(m).forEach(function(k){if(paketsiz||/^(\d+-\d+[a-z]*|match|test)$/.test(k))urls.push(m[k]);});
   Object.keys(pk).forEach(function(k){seen[pk[k][0]]=1;});Object.keys(seen).forEach(function(n){urls.push(n);});
   if(!urls.length){pwaInfo("İndirilecek ses bulunamadı.");return;}
   var done=0,fail=0,i=0;
