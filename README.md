@@ -1,5 +1,5 @@
 ﻿# Derslik
 
 Kişisel çalışma uygulaması (statik site). Arama motorlarına kapalıdır (noindex).
-Sürüm: 20261022214306
+Sürüm: 20261022233053
 
