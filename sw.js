@@ -1,6 +1,6 @@
 /* Servis çalışanı: uygulamayı çevrimdışı açar, sesleri ilk kullanımda önbelleğe alır.
-   20261023205442 yayın sırasında zaman damgasıyla değişir; yeni sürüm gelince eski kabuk silinir. */
-const SURUM = "20261023205442";
+   20261023233125 yayın sırasında zaman damgasıyla değişir; yeni sürüm gelince eski kabuk silinir. */
+const SURUM = "20261023233125";
 const KABUK = "mv-kabuk-" + SURUM, SES = "mv-ses", YAZI = "mv-yazi";
 const KABUK_DOSYALARI = ["./", "index.html", "manifest.webmanifest", "icon-192.png", "icon-512.png", "apple-touch-icon.png", "fonts/yazi.css", "audio/manifest.js", "audio/manifest3.js", "audio-erkek/manifest.js", "audio-erkek/manifest3.js", "audio-gk/manifest.js", "audio-gk/manifest2.js", "audio-ge/manifest.js", "audio-ge/manifest2.js"];
 
